@@ -33,6 +33,12 @@ HOSTIPADDRESS=`ifconfig  | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 
 NAGIOSPATH=/opt/nagios
 ADDONS=/opt/nagios/addons
 DOWNLOAD_DIR=$SOURCE
+##Packages##
+NAGIOSPACKAGE=nagios-3.4.1.tar.gz
+NAGIOSPLUGIN=nagios-plugins-1.4.16
+MKLIVE=mk-livestatus-1.2.0p2
+MERLIN=merlin-v1.2.1
+NINJA=ninja-v2.0.6
 nagiosinstall () {
 cd $DOWNLOAD_DIR
 useradd nagios
@@ -40,8 +46,8 @@ useradd nagios
 /usr/sbin/usermod -a -G nagcmd nagios
 /usr/sbin/usermod -a -G nagcmd apache
 yum -y --disablerepo=* --enablerepo=nagios install httpd php net-snmp*  mysql-server libdbi-dbd-mysql libdbi-devel php-cli php-mysql gcc glibc glibc-common gd gd-devel openssl-devel perl-DBD-MySQL mysql-server mysql-devel php php-mysql php-gd php-ldap php-xml perl-DBI perl-DBD-MySQL perl-Config-IniFiles perl-rrdtool php-pear  make cairo-devel glib2-devel pango-devel openssl* rrdtool* php-gd gd gd-devel gd-progs wget MySQL-python gcc-c++ cairo-devel libxml2-devel pango-devel pango libpng-devel freetype freetype-devel libart_lgpl-devel perl-Crypt-DES perl-Digest-SHA1 perl-Digest-HMAC perl-Socket6 perl-IO-Socket-INET6 net-snmp net-snmp-libs php-snmp dmidecode lm_sensors perl-Net-SNMP net-snmp-perl fping graphviz cpp glib2-devel php-gd php-mysql php-snmp php-ldap php-date php-mail php-mail-mime php-net-smtp php-net-socket php5-xmlrpc php-mbstring php-posix postfix
-tar -zxvf nagios-3.4.1.tar.gz
-tar -zxvf nagios-plugins-1.4.16.tar.gz
+tar -zxvf $NAGIOSPACKAGE
+tar -zxvf $NAGIOSPLUGIN.tar.gz
 cd nagios
 ./configure --with-command-group=nagcmd --prefix=$NAGIOSPATH
 make all
@@ -50,7 +56,7 @@ echo "Copying Eventhandlers"
 cp -R contrib/eventhandlers/ $NAGIOSPATH/libexec/
 chown -R nagios:nagios /usr/local/nagios/libexec/eventhandlers
 cd ..
-cd 	nagios-plugins-1.4.16
+cd 	$NAGIOSPLUGIN
 ./configure --with-nagios-user=nagios --with-nagios-group=nagios --prefix=$NAGIOSPATH
 make && make install
 chkconfig --add nagios
@@ -74,8 +80,8 @@ echo "PASSWORD: nagiosadmin"
 }
 livestatusinstall () {
 cd $DOWNLOAD_DIR
-tar -zxvf mk-livestatus-1.2.0p2.tar.gz
-cd mk-livestatus-1.2.0p2
+tar -zxvf $MKLIVE.tar.gz
+cd $MKLIVE
 ./configure --prefix=$ADDONS/livestatus
 make && make install
 sed -i '/file!!!/ a\broker_module=/opt/nagios/addons/livestatus/lib/mk-livestatus/livestatus.o /opt/nagios/var/rw/live' /opt/nagios/etc/nagios.cfg
@@ -85,8 +91,8 @@ sed -i '/file!!!/ a\broker_module=/opt/nagios/addons/livestatus/lib/mk-livestatu
 merlininstall () {
 /etc/init.d/mysqld restart
 cd $DOWNLOAD_DIR
-tar -zxvf merlin-v1.2.1.tar.gz
-cd merlin-v1.2.1
+tar -zxvf $MERLIN.tar.gz
+cd $MERLIN
 make
 mysql -u root -e 'create database merlin'
 mysql -u root -e "grant all privileges on merlin.* to merlin@localhost identified by 'merlin'"
