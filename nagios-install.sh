@@ -69,6 +69,8 @@ chmod 755 /sbin/nagioschk
 /usr/sbin/usermod -a -G nagcmd apache
 chmod 775 /opt/nagios/var/rw
 chmod g+s /opt/nagios/var/rw
+chown -R nagios:apache /opt/nagios/etc/htpasswd.users
+chmod 664 /opt/nagios/etc/htpasswd.users
 /etc/init.d/httpd restart
 /etc/init.d/nagios restart
 echo "Nagios and Nagios Plugins installed successfully"
@@ -117,6 +119,41 @@ sed -i 's&/etc/init.d/monitor&/etc/init.d/nagios&g' *.sh
 sed -i '/slay/d' stop.sh
 sed -i 's/configtest/checkconfig/g' restart.sh
 }
+##Ninja Installation###
+ninjainstall () {
+cd $DOWNLOAD_DIR
+cat << EOF > /etc/httpd/conf.d/ninja.conf
+<IfModule !mod_alias.c>
+        LoadModule alias_module modules/mod_alias.so
+</IfModule>
+
+Alias /ninja /opt/nagios/addons/ninja
+<Directory "/opt/nagios/addons/ninja">
+        Order allow,deny
+        Allow from all
+        DirectoryIndex index.php
+</Directory>
+EOF
+tar -zxvf $NINJA.tar.gz
+cd $NINJA
+\cp op5build/index.php .
+sed -i 's&/opt/monitor/op5/ninja&/opt/nagios/addons/ninja&g' index.php
+cd install_scripts/
+sed -i 's&/opt/monitor/op5/ninja&/opt/nagios/addons/ninja&g' *
+cp *.crontab /etc/cron.d/
+cd $DOWNLOAD_DIR
+cp -a ninja-v2.0.6 /opt/nagios/addons/ninja
+cd /opt/nagios/addons/ninja/
+cd install_scripts/
+sh ninja_db_init.sh /opt/nagios/addons/ninja/
+cd /opt/nagios/addons/ninja/application/config
+sed -i 's&/opt/monitor&/opt/nagios&g' config.php
+sed -i 's&/opt/monitor/op5/merlin/showlog&/opt/nagios/addons/merlin/showlog&g' reports.php
+#application/views/themes/default/menu/menu.php
+/etc/init.d/httpd restart
+/etc/init.d/nagios restart
+/etc/init.d/merlind reload
+}
 
 case "$1" in
 'download')
@@ -135,8 +172,22 @@ livestatusinstall
 echo "Installing Merlin Application"
 merlininstall
 ;;
+'ninjainstall')
+echo "Installing Ninja Application"
+ninjainstall
+;;
+'allinstall')
+echo "Installing  Nagios"
+nagiosinstall
+echo "Installing LiveStatus Application"
+livestatusinstall
+echo "Installing Merlin Application"
+merlininstall
+echo "Installing Ninja Application"
+ninjainstall
+;;
 *)
-echo "Usage: $0 [download|nagiosinstall|livestatusinstall|merlininstall]"
+echo "Usage: $0 [download|nagiosinstall|livestatusinstall|merlininstall|ninjainstall|allinstall]"
 ;;
 esac	
 
