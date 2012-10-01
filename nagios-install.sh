@@ -99,7 +99,7 @@ make
 mysql -u root -e 'create database merlin'
 mysql -u root -e "grant all privileges on merlin.* to merlin@localhost identified by 'merlin'"
 mysql -u root -e 'flush privileges'
-./install-merlin.sh --nagios-cfg=$NAGIOSPATH/etc/nagios.cfg --dest-dir=$NAGIOSPATH/addons/merlin
+./install-merlin.sh --nagios-cfg=$NAGIOSPATH/etc/nagios.cfg --dest-dir=$NAGIOSPATH/addons/merlin --batch
 /etc/init.d/nagios restart
 /etc/init.d/merlind restart
 /etc/init.d/nagios restart
