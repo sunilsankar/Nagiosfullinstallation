@@ -1,7 +1,23 @@
 #!/bin/bash
+##########################################################################################################################
 #Date 20-Sep-2012
 #Purpose Nagios Full installation with packages
 #Author Sunil Sankar
+#email sunil@sunil.cc
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>
+##########################################################################################################################
+
 tmpdir="$(dirname $0)"
 echo ${tmpdir} | grep '^/' >/dev/null 2>&1
 if [ X"$?" == X"0" ]; then
@@ -45,7 +61,7 @@ useradd nagios
 /usr/sbin/groupadd nagcmd
 /usr/sbin/usermod -a -G nagcmd nagios
 /usr/sbin/usermod -a -G nagcmd apache
-yum -y --disablerepo=* --enablerepo=nagios install httpd php net-snmp*  mysql-server libdbi-dbd-mysql libdbi-devel php-cli php-mysql gcc glibc glibc-common gd gd-devel openssl-devel perl-DBD-MySQL mysql-server mysql-devel php php-mysql php-gd php-ldap php-xml perl-DBI perl-DBD-MySQL perl-Config-IniFiles perl-rrdtool php-pear  make cairo-devel glib2-devel pango-devel openssl* rrdtool* php-gd gd gd-devel gd-progs wget MySQL-python gcc-c++ cairo-devel libxml2-devel pango-devel pango libpng-devel freetype freetype-devel libart_lgpl-devel perl-Crypt-DES perl-Digest-SHA1 perl-Digest-HMAC perl-Socket6 perl-IO-Socket-INET6 net-snmp net-snmp-libs php-snmp dmidecode lm_sensors perl-Net-SNMP net-snmp-perl fping graphviz cpp glib2-devel php-gd php-mysql php-snmp php-ldap php-date php-mail php-mail-mime php-net-smtp php-net-socket php5-xmlrpc php-mbstring php-posix postfix
+yum -y --disablerepo=* --enablerepo=nagios install httpd php net-snmp*  mysql-server libdbi-dbd-mysql libdbi-devel php-cli php-mysql gcc glibc glibc-common gd gd-devel openssl-devel perl-DBD-MySQL mysql-server mysql-devel php php-mysql php-gd php-ldap php-xml perl-DBI perl-DBD-MySQL perl-Config-IniFiles perl-rrdtool php-pear  make cairo-devel glib2-devel pango-devel openssl* rrdtool* php-gd gd gd-devel gd-progs wget MySQL-python gcc-c++ cairo-devel libxml2-devel pango-devel pango libpng-devel freetype freetype-devel libart_lgpl-devel perl-Crypt-DES perl-Digest-SHA1 perl-Digest-HMAC perl-Socket6 perl-IO-Socket-INET6 net-snmp net-snmp-libs php-snmp dmidecode lm_sensors perl-Net-SNMP net-snmp-perl fping graphviz cpp glib2-devel php-gd php-mysql php-ldap php-mbstring  postfix dovecot
 tar -zxvf $NAGIOSPACKAGE
 tar -zxvf $NAGIOSPLUGIN.tar.gz
 cd nagios
@@ -73,12 +89,12 @@ chown -R nagios:apache /opt/nagios/etc/htpasswd.users
 chmod 664 /opt/nagios/etc/htpasswd.users
 /etc/init.d/httpd restart
 /etc/init.d/nagios restart
-echo "Nagios and Nagios Plugins installed successfully"
-echo "Please access the Nagios Dashboard "
-echo "http://$HOSTIPADDRESS/nagios"
-echo "Please login with the following Credentials"
-echo "USERNAME: nagiosadmin"
-echo "PASSWORD: nagiosadmin"
+echo "Nagios and Nagios Plugins installed successfully" > nagiosinstall.log
+echo "Please access the Nagios Dashboard " >> nagiosinstall.log
+echo "http://$HOSTIPADDRESS/nagios" >> nagiosinstall.log
+echo "Please login with the following Credentials" >> nagiosinstall.log
+echo "USERNAME: nagiosadmin" >> nagiosinstall.log
+echo "PASSWORD: nagiosadmin" >> nagiosinstall.log
 }
 livestatusinstall () {
 cd $DOWNLOAD_DIR
@@ -153,6 +169,14 @@ sed -i 's&/opt/monitor/op5/merlin/showlog&/opt/nagios/addons/merlin/showlog&g' r
 /etc/init.d/httpd restart
 /etc/init.d/nagios restart
 /etc/init.d/merlind reload
+echo "Please check nagiosinstall.log for url details
+echo "##########################################" >> nagiosinstall.log
+echo "Ninja installed successfully" >> nagiosinstall.log
+echo "Please access the Ninja Dashboard " >> nagiosinstall.log
+echo "http://$HOSTIPADDRESS/ninja" >> nagiosinstall.log
+echo "Please login with the following Credentials" >> nagiosinstall.log
+echo "USERNAME: nagiosadmin" >> nagiosinstall.log
+echo "PASSWORD: nagiosadmin" >> nagiosinstall.log
 }
 
 case "$1" in
