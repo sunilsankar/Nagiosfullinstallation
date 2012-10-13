@@ -143,7 +143,7 @@ sed -i 's&/etc/init.d/monitor&/etc/init.d/nagios&g' *.sh
 sed -i '/slay/d' stop.sh
 sed -i 's/configtest/checkconfig/g' restart.sh
 #For killing the database properly this is hack to be added 
-sed -i '/nagios stop/a\sleep 6' /usr/libexec/merlin/stop.sh
+sed -i '/nagios stop/a\echo "1";sleep 1;echo "2";sleep 1;echo "3";sleep 1;echo "4";sleep 1;echo "5";sleep 1;echo "6";echo "Done"' /usr/libexec/merlin/stop.sh
 }
 ##Ninja Installation###
 ninjainstall () {
