@@ -169,7 +169,8 @@ sed -i 's&/opt/monitor/op5/merlin/showlog&/opt/nagios/addons/merlin/showlog&g' r
 /etc/init.d/httpd restart
 /etc/init.d/nagios restart
 /etc/init.d/merlind reload
-echo "Please check nagiosinstall.log for url details
+echo "Please check nagiosinstall.log for url details"
+sleep 5
 echo "##########################################" >> nagiosinstall.log
 echo "Ninja installed successfully" >> nagiosinstall.log
 echo "Please access the Ninja Dashboard " >> nagiosinstall.log
@@ -213,5 +214,5 @@ ninjainstall
 *)
 echo "Usage: $0 [download|nagiosinstall|livestatusinstall|merlininstall|ninjainstall|allinstall]"
 ;;
-esac	
+esac
 
