@@ -141,6 +141,8 @@ sed -i 's&/opt/monitor&/opt/nagios&g' *.sh
 sed -i 's&/etc/init.d/monitor&/etc/init.d/nagios&g' *.sh
 sed -i '/slay/d' stop.sh
 sed -i 's/configtest/checkconfig/g' restart.sh
+#For killing the database properly this is hack to be added 
+sed -i '/nagios stop/a\sleep 6' /usr/libexec/merlin/stop.sh
 }
 ##Ninja Installation###
 ninjainstall () {
@@ -176,7 +178,7 @@ sed -i 's&/opt/monitor/op5/merlin/showlog&/opt/nagios/addons/merlin/showlog&g' r
 /etc/init.d/httpd restart
 /etc/init.d/nagios restart
 /etc/init.d/merlind reload
-echo "Please check nagiosinstall.log for url details"
+echo "Please check $NAGIOSDIR/nagiosinstall.log for url details"
 sleep 5
 echo "##########################################" >> $NAGIOSDIR/nagiosinstall.log
 echo "Ninja installed successfully" >> $NAGIOSDIR/nagiosinstall.log
