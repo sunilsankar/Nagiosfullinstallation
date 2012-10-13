@@ -52,6 +52,7 @@ DOWNLOAD_DIR=$SOURCE
 ##Packages##
 NAGIOSPACKAGE=nagios-3.4.1.tar.gz
 NAGIOSPLUGIN=nagios-plugins-1.4.16
+NRPE=nrpe-2.13
 MKLIVE=mk-livestatus-1.2.0p2
 MERLIN=merlin-v1.2.1
 NINJA=ninja-v2.0.6
@@ -64,6 +65,7 @@ useradd nagios
 yum -y --disablerepo=* --enablerepo=nagios install httpd php net-snmp*  mysql-server libdbi-dbd-mysql libdbi-devel php-cli php-mysql gcc glibc glibc-common gd gd-devel openssl-devel perl-DBD-MySQL mysql-server mysql-devel php php-mysql php-gd php-ldap php-xml perl-DBI perl-DBD-MySQL perl-Config-IniFiles perl-rrdtool php-pear  make cairo-devel glib2-devel pango-devel openssl* rrdtool* php-gd gd gd-devel gd-progs wget MySQL-python gcc-c++ cairo-devel libxml2-devel pango-devel pango libpng-devel freetype freetype-devel libart_lgpl-devel perl-Crypt-DES perl-Digest-SHA1 perl-Digest-HMAC perl-Socket6 perl-IO-Socket-INET6 net-snmp net-snmp-libs php-snmp dmidecode lm_sensors perl-Net-SNMP net-snmp-perl fping graphviz cpp glib2-devel php-gd php-mysql php-ldap php-mbstring  postfix dovecot
 tar -zxvf $NAGIOSPACKAGE
 tar -zxvf $NAGIOSPLUGIN.tar.gz
+tar -zxvf $NRPE.tar.gz
 cd nagios
 ./configure --with-command-group=nagcmd --prefix=$NAGIOSPATH
 make all
@@ -87,14 +89,19 @@ chmod 775 /opt/nagios/var/rw
 chmod g+s /opt/nagios/var/rw
 chown -R nagios:apache /opt/nagios/etc/htpasswd.users
 chmod 664 /opt/nagios/etc/htpasswd.users
+##NRPE Installation for check_nrpe##
+cd ..
+cd $NRPE
+./configure --enable-command-args --prefix=$NAGIOSPATH
+make && make install-plugin && make install
 /etc/init.d/httpd restart
 /etc/init.d/nagios restart
-echo "Nagios and Nagios Plugins installed successfully" > nagiosinstall.log
-echo "Please access the Nagios Dashboard " >> nagiosinstall.log
-echo "http://$HOSTIPADDRESS/nagios" >> nagiosinstall.log
-echo "Please login with the following Credentials" >> nagiosinstall.log
-echo "USERNAME: nagiosadmin" >> nagiosinstall.log
-echo "PASSWORD: nagiosadmin" >> nagiosinstall.log
+echo "Nagios and Nagios Plugins installed successfully" > $NAGIOSDIR/nagiosinstall.log
+echo "Please access the Nagios Dashboard " >> $NAGIOSDIR/nagiosinstall.log
+echo "http://$HOSTIPADDRESS/nagios" >> $NAGIOSDIR/nagiosinstall.log
+echo "Please login with the following Credentials" >> $NAGIOSDIR/nagiosinstall.log
+echo "USERNAME: nagiosadmin" >> $NAGIOSDIR/nagiosinstall.log
+echo "PASSWORD: nagiosadmin" >> $NAGIOSDIR/nagiosinstall.log
 }
 livestatusinstall () {
 cd $DOWNLOAD_DIR
@@ -171,13 +178,13 @@ sed -i 's&/opt/monitor/op5/merlin/showlog&/opt/nagios/addons/merlin/showlog&g' r
 /etc/init.d/merlind reload
 echo "Please check nagiosinstall.log for url details"
 sleep 5
-echo "##########################################" >> nagiosinstall.log
-echo "Ninja installed successfully" >> nagiosinstall.log
-echo "Please access the Ninja Dashboard " >> nagiosinstall.log
-echo "http://$HOSTIPADDRESS/ninja" >> nagiosinstall.log
-echo "Please login with the following Credentials" >> nagiosinstall.log
-echo "USERNAME: nagiosadmin" >> nagiosinstall.log
-echo "PASSWORD: nagiosadmin" >> nagiosinstall.log
+echo "##########################################" >> $NAGIOSDIR/nagiosinstall.log
+echo "Ninja installed successfully" >> $NAGIOSDIR/nagiosinstall.log
+echo "Please access the Ninja Dashboard " >> $NAGIOSDIR/nagiosinstall.log
+echo "http://$HOSTIPADDRESS/ninja" >> $NAGIOSDIR/nagiosinstall.log
+echo "Please login with the following Credentials" >> $NAGIOSDIR/nagiosinstall.log
+echo "USERNAME: nagiosadmin" >> $NAGIOSDIR/nagiosinstall.log
+echo "PASSWORD: nagiosadmin" >> $NAGIOSDIR/nagiosinstall.log
 }
 
 case "$1" in
