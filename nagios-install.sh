@@ -110,6 +110,7 @@ cd $MKLIVE
 ./configure --prefix=$ADDONS/livestatus
 make && make install
 sed -i '/file!!!/ a\broker_module=/opt/nagios/addons/livestatus/lib/mk-livestatus/livestatus.o /opt/nagios/var/rw/live' /opt/nagios/etc/nagios.cfg
+echo "export PATH=/opt/nagios/addons/livestatus/bin:\$PATH" >> /etc/profile
 /etc/init.d/nagios restart
 }
 ##Merlin installation###
