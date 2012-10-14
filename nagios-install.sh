@@ -33,6 +33,7 @@ exit 1
 fi
 PACKAGE="$NAGIOSDIR/rpms"
 SOURCE=$NAGIOSDIR/source
+PATCH=$NAGIOSDIR/patch
 cat << EOF > nagios.repo
 [nagios]
 name=Nagios Complete Installation with Packages
@@ -56,6 +57,7 @@ NRPE=nrpe-2.13
 MKLIVE=mk-livestatus-1.2.0p2
 MERLIN=merlin-v1.2.1
 NINJA=ninja-v2.0.6
+PNP=pnp4nagios-0.6.19
 nagiosinstall () {
 cd $DOWNLOAD_DIR
 useradd nagios
@@ -102,6 +104,29 @@ echo "http://$HOSTIPADDRESS/nagios" >> $NAGIOSDIR/nagiosinstall.log
 echo "Please login with the following Credentials" >> $NAGIOSDIR/nagiosinstall.log
 echo "USERNAME: nagiosadmin" >> $NAGIOSDIR/nagiosinstall.log
 echo "PASSWORD: nagiosadmin" >> $NAGIOSDIR/nagiosinstall.log
+}
+#####PNP4NAGIOS#######
+pnp4nagiosinstall () {
+cd $DOWNLOAD_DIR
+tar -zxvf $PNP.tar.gz
+cd $PNP
+./configure --prefix=$ADDONS/pnp
+make all && make fullinstall
+sed -ri '/(AuthName|AuthUserFile|Require|AuthType)/d' /etc/httpd/conf.d/pnp4nagios.conf
+/etc/init.d/httpd restart
+mv /opt/nagios/addons/pnp/share/install.php /opt/nagios/addons/pnp/share/install.php.txt
+##Patching Nagios##
+patch -u $NAGIOSPATH/etc/nagios.cfg $PATCH/nagios.patch
+patch -u $NAGIOSPATH/etc/objects/commands.cfg $PATCH/commands.patch
+/etc/init.d/nagios restart
+/etc/init.d/npcd start
+chkconfig npcd on
+##Ninja Changes###
+sed -i 's&/opt/nagios/etc/pnp/config.php&/opt/nagios/addons/pnp/etc/config.php&g' /opt/nagios/addons/ninja/application/config/config.php
+sed -i 's&/monitor/op5/pnp/&/pnp4nagios/&g' /opt/nagios/addons/ninja/application/config/config.php
+/etc/init.d/httpd restart
+/etc/init.d/nagios restart
+/etc/init.d/merlind restart
 }
 livestatusinstall () {
 cd $DOWNLOAD_DIR
@@ -176,6 +201,7 @@ cd /opt/nagios/addons/ninja/application/config
 sed -i 's&/opt/monitor&/opt/nagios&g' config.php
 sed -i 's&/opt/monitor/op5/merlin/showlog&/opt/nagios/addons/merlin/showlog&g' reports.php
 #application/views/themes/default/menu/menu.php
+patch -u /opt/nagios/addons/ninja/application/views/themes/default/menu/menu.php $PATCH/menu.patch
 /etc/init.d/httpd restart
 /etc/init.d/nagios restart
 /etc/init.d/merlind reload
@@ -211,6 +237,10 @@ merlininstall
 echo "Installing Ninja Application"
 ninjainstall
 ;;
+'pnp4nagiosinstall')
+echo "Installing Pnp4Nagios Application"
+pnp4nagiosinstall
+;;
 'allinstall')
 echo "Installing  Nagios"
 nagiosinstall
@@ -220,9 +250,11 @@ echo "Installing Merlin Application"
 merlininstall
 echo "Installing Ninja Application"
 ninjainstall
+echo "Installing PNP4Nagios Application"
+pnp4nagiosinstall
 ;;
 *)
-echo "Usage: $0 [download|nagiosinstall|livestatusinstall|merlininstall|ninjainstall|allinstall]"
+echo "Usage: $0 [download|nagiosinstall|livestatusinstall|merlininstall|ninjainstall|pnp4nagiosinstall|allinstall]"
 ;;
 esac
 
