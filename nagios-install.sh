@@ -1,7 +1,7 @@
 #!/bin/bash
 ##########################################################################################################################
 #Date 20-Sep-2012
-#Purpose Nagios Full installation with packages
+#Purpose Nagios Full installation with packages and dependencies
 #Author Sunil Sankar
 #email sunil@sunil.cc
 # This program is free software: you can redistribute it and/or modify
