@@ -64,7 +64,7 @@ useradd nagios
 /usr/sbin/groupadd nagcmd
 /usr/sbin/usermod -a -G nagcmd nagios
 /usr/sbin/usermod -a -G nagcmd apache
-yum -y --disablerepo=* --enablerepo=nagios install httpd php perl net-snmp*  mysql-server libdbi-dbd-mysql libdbi-devel php-cli php-mysql gcc glibc glibc-common gd gd-devel openssl-devel perl-DBD-MySQL mysql-server mysql-devel php php-mysql php-gd php-ldap php-xml perl-DBI perl-DBD-MySQL perl-Config-IniFiles perl-rrdtool php-pear  make cairo-devel glib2-devel pango-devel openssl* rrdtool* php-gd gd gd-devel gd-progs wget MySQL-python gcc-c++ cairo-devel libxml2-devel pango-devel pango libpng-devel freetype freetype-devel libart_lgpl-devel perl-Crypt-DES perl-Digest-SHA1 perl-Digest-HMAC perl-Socket6 perl-IO-Socket-INET6 net-snmp net-snmp-libs php-snmp dmidecode lm_sensors perl-Net-SNMP net-snmp-perl fping graphviz cpp glib2-devel php-gd php-mysql php-ldap php-mbstring  postfix dovecot sharutils perl-Time-HiRes patch php-process
+yum -y --disablerepo=* --enablerepo=nagios install httpd php perl net-snmp*  mysql-server libdbi-dbd-mysql libdbi-devel php-cli php-mysql gcc glibc glibc-common gd gd-devel openssl-devel mod_ssl perl-DBD-MySQL mysql-server mysql-devel php php-mysql php-gd php-ldap php-xml perl-DBI perl-DBD-MySQL perl-Config-IniFiles perl-rrdtool php-pear  make cairo-devel glib2-devel pango-devel openssl* rrdtool* php-gd gd gd-devel gd-progs wget MySQL-python gcc-c++ cairo-devel libxml2-devel pango-devel pango libpng-devel freetype freetype-devel libart_lgpl-devel perl-Crypt-DES perl-Digest-SHA1 perl-Digest-HMAC perl-Socket6 perl-IO-Socket-INET6 net-snmp net-snmp-libs php-snmp dmidecode lm_sensors perl-Net-SNMP net-snmp-perl fping graphviz cpp glib2-devel php-gd php-mysql php-ldap php-mbstring  postfix dovecot sharutils perl-Time-HiRes patch php-process
 tar -zxvf $NAGIOSPACKAGE
 tar -zxvf $NAGIOSPLUGIN.tar.gz
 tar -zxvf $NRPE.tar.gz
@@ -104,6 +104,8 @@ echo "http://$HOSTIPADDRESS/nagios" >> $NAGIOSDIR/nagiosinstall.log
 echo "Please login with the following Credentials" >> $NAGIOSDIR/nagiosinstall.log
 echo "USERNAME: nagiosadmin" >> $NAGIOSDIR/nagiosinstall.log
 echo "PASSWORD: nagiosadmin" >> $NAGIOSDIR/nagiosinstall.log
+###Enabling http to https redirection###
+echo -e " RewriteEngine On \n" "RewriteCond %{HTTPS} off \n" "RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}" >> /etc/httpd/conf/httpd.conf
 }
 #####PNP4NAGIOS#######
 pnp4nagiosinstall () {
