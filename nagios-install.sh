@@ -74,7 +74,7 @@ make all
 make install; make install-init; make install-config; make install-commandmode; make install-webconf
 echo "Copying Eventhandlers"
 cp -R contrib/eventhandlers/ $NAGIOSPATH/libexec/
-chown -R nagios:nagios /usr/local/nagios/libexec/eventhandlers
+chown -R nagios:nagios /opt/nagios/libexec/eventhandlers
 cd ..
 cd 	$NAGIOSPLUGIN
 ./configure --with-nagios-user=nagios --with-nagios-group=nagios --prefix=$NAGIOSPATH
